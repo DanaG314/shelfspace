@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views # Import views to connect routes to view functions
+from . import views 
 
 urlpatterns = [
     #path('', views.Home, name='home'),

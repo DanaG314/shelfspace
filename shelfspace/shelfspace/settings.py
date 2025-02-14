@@ -93,6 +93,7 @@ DATABASES = {
         'OPTIONS': {
             'sslmode': 'require',
         },
+        
     }
 }
 
