@@ -30,3 +30,9 @@ def signup(request):
 def bookshelf(request):
     books = Book.objects.filter(user=request.user)
     return render(request, 'books/bookshelf.html', { 'books': books })
+
+def book_detail(request, book_id):
+    book = Book.objects.get(id=book_id)
+    return render(request, 'books/detail.html', {
+        'bookshelf': bookshelf,
+    })
