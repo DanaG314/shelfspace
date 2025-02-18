@@ -36,9 +36,7 @@ ShelfSpace{%endblock%} {% block content %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {% for book in books %}
       <div class="group">
-        {% comment %}
-        <a href="{% url 'books:book_detail' book.id %}" class="block">
-          {% endcomment %}
+        <a href="{% url 'bookshelf-detail' book.id %}" class="block">
           <div class="relative">
             {% if book.cover_url %}
             <img
