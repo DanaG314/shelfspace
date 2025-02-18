@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
+from main_app.models import Book
 from django.http import HttpResponse
+from django.views.generic import ListView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -24,3 +26,7 @@ def signup(request):
         form = UserCreationForm()
     context = {'form': form, 'error_message': error_message}
     return render(request, 'signup.html', context)
+
+def bookshelf(request):
+    books = Book.objects.filter(user=request.user)
+    return render(request, 'books/bookshelf.html', { 'books': books })

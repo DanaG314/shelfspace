@@ -1,47 +1,81 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-    <title>ShelfSpace</title>
-    {% block head %} {% endblock %}
+    <title>{% block title %}ShelfSpace{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
-  <body>
-    <header>
-      <div class="header-logo-container"></div>
-      <nav>
-        <ul>
-          {% if user.is_authenticated %} {% comment %}
-          <li><a href="{% url 'cat-index' %}">All Cats</a></li>
-          {% endcomment %} {% comment %}
-          <li><a href="{% url 'toy-index' %}">All Toys</a></li>
-          {% endcomment %} {% comment %}
-          <li><a href="{% url 'cat-create' %}">Add a Cat</a></li>
-          {% endcomment %} {% comment %}
-          <li><a href="{% url 'toy-create' %}">Add a Toy</a></li>
-          {% endcomment %}
-          <li><a href="{% url 'about' %}">About</a></li>
-
-          <li>
-            <form id="logout-form" method="post" action="{% url 'logout' %}">
-              {% csrf_token %}
-              <button type="submit">Log out</button>
-            </form>
-          </li>
-          {% else %} {% comment %}
-          <li><a href="{% url 'about' %}">About</a></li>
-          {% endcomment %}
-          <li><a href="{% url 'home' %}">Login</a></li>
-          <li><a href="{% url 'about' %}">About</a></li>
-          <li><a href="{% url 'signup' %}">Sign Up</a></li>
-          {% endif %}
-        </ul>
-      </nav>
-    </header>
-    <main>{% block content %} {% endblock %}</main>
+  <body class="h-full bg-white">
+    <!-- Navigation Bar -->
+    <nav class="border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <!-- Logo/Brand -->
+          <div class="flex items-center">
+            <a
+              href="{% url 'home' %}"
+              class="text-xl font-medium text-gray-900"
+            >
+              <span class="text-emerald-600">ShelfSpace</span>
+            </a>
+          </div>
+          <!-- Navigation Links -->
+          <div class="flex items-center space-x-4">
+            {% if user.is_authenticated %}
+            <!-- Menu for logged-in users -->
+            <div class="flex items-center space-x-4">
+              <a
+                href="{% url 'bookshelf' %}"
+                class="text-gray-600 hover:text-gray-900"
+              >
+                My Books
+              </a>
+              <!-- Logout Form -->
+              <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="text-gray-600 hover:text-gray-900">
+                  Log Out
+                </button>
+              </form>
+            </div>
+            {% else %}
+            <!-- Menu for non-authenticated users -->
+            <a
+              href="{% url 'login' %}"
+              class="text-gray-600 hover:text-gray-900"
+            >
+              Log In
+            </a>
+            <a
+              href="{% url 'signup' %}"
+              class="text-gray-600 hover:text-gray-900"
+            >
+              Sign Up
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content Area -->
+    <main>
+      <!-- Message/Alert Display -->
+      {% if messages %}
+      <div class="fixed bottom-0 right-0 m-8">
+        {% for message in messages %}
+        <div
+          class="bg-white rounded-lg shadow-lg p-4 mb-4 {% if message.tags %}{{ message.tags }}{% endif %}"
+        >
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <!-- Content Block -->
+      {% block content %} {% endblock %}
+    </main>
   </body>
 </html>
