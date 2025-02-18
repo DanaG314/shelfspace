@@ -1,17 +1,72 @@
 {% extends 'base.html' %}
 {% block content %}
-  <!-- Search Section -->
-  <div class="max-w-7xl mx-auto px-8 py-8">
-    <form method="GET" class="mb-8">
-      <div class="flex gap-4">
-        <input type="text" name="q" class="flex-1 rounded-md" placeholder="Search for books...">
-        <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-md">Search</button>
-      </div>
-    </form>
-    
-    <!-- Results Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-      <!-- Book cards will go here -->
+<!-- Search Section -->
+<div class="max-w-7xl mx-auto px-8 py-8">
+  <form method="GET" class="mb-8">
+    <div class="flex gap-4">
+      <input 
+        type="text" 
+        name="q" 
+        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500" 
+        placeholder="Search for books..."
+        value="{{ request.GET.q }}"
+      >
+      <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors">
+        Search
+      </button>
     </div>
+  </form>
+
+  {% if error %}
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-8">
+      <p class="text-red-700">{{ error }}</p>
+    </div>
+  {% endif %}
+  
+  <!-- Results Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    {% if results %}
+      {% for book in results %}
+        <div class="group book-card bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+          <div class="relative aspect-[3/4]">
+            {% if book.cover_url %}
+              <img 
+                src="{{ book.cover_url }}" 
+                alt="{{ book.title }}" 
+                class="w-full h-full object-cover rounded-t-lg"
+              >
+            {% else %}
+              <div class="w-full h-full bg-gray-100 rounded-t-lg flex items-center justify-center">
+                <span class="text-gray-400">No cover</span>
+              </div>
+            {% endif %}
+          </div>
+          <div class="p-4">
+            <h3 class="text-lg font-medium text-gray-900 truncate">{{ book.title }}</h3>
+            <p class="text-sm text-gray-600">{{ book.authors }}</p>
+            {% if book.page_count %}
+              <p class="text-sm text-gray-500 mt-1">{{ book.page_count }} pages</p>
+            {% endif %}
+            <form action="{% url 'book-add' %}" method="POST" class="mt-4">
+              {% csrf_token %}
+              <input type="hidden" name="google_books_id" value="{{ book.id }}">
+              <button type="submit" class="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors">
+                Add to Bookshelf
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      {% if request.GET.q %}
+        <div class="col-span-full text-center py-12">
+          <h3 class="text-lg font-medium text-gray-900">No books found</h3>
+          <p class="mt-2 text-sm text-gray-600">
+            Try searching with different keywords
+          </p>
+        </div>
+      {% endif %}
+    {% endif %}
   </div>
+</div>
 {% endblock %}
