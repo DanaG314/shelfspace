@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 import environ
+env = environ.Env()
 environ.Env()
 environ.Env.read_env()
 
@@ -130,6 +131,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+GOOGLE_BOOKS_API_KEY = env('GOOGLE_BOOKS_API_KEY')
 
 LOGIN_REDIRECT_URL = 'bookshelf/'
 LOGOUT_REDIRECT_URL = '/'
