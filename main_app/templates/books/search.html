@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+  <!-- Search Section -->
+  <div class="max-w-7xl mx-auto px-8 py-8">
+    <form method="GET" class="mb-8">
+      <div class="flex gap-4">
+        <input type="text" name="q" class="flex-1 rounded-md" placeholder="Search for books...">
+        <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-md">Search</button>
+      </div>
+    </form>
+    
+    <!-- Results Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Book cards will go here -->
+    </div>
+  </div>
+{% endblock %}
