@@ -88,7 +88,11 @@ ShelfSpace{%endblock%} {% block content %}
             {% comment %} href="{% url 'books:book_create' %}" {% endcomment %}
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
           >
+        
+            <a href="{% url 'book-search' %}">
             Add Your First Book
+
+  
           </a>
         </div>
       </div>

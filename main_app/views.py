@@ -1,3 +1,4 @@
+import requests
 from django.shortcuts import render, redirect
 from main_app.models import Book
 from django.http import HttpResponse
@@ -36,3 +37,30 @@ def book_detail(request, book_id):
     return render(request, 'books/detail.html', {
         'bookshelf': bookshelf,
     })
+
+def book_search(request):
+    search_results = []
+    if 'q' in request.GET:
+        query = request.Get('q', '')
+        api_key = settings.GOOGLE_BOOKS_API_KEY
+        url = f'https://www.googleapis.com/books/v1/volumes?q={query}&key={api_key}'
+
+        try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    if 'items' in data:
+                        for item in data['items']:
+                            volume_info = item.get('volumeInfo', {})
+                            book_data = {
+                                'id': item.get('id'),
+                                'title': volume_info.get('title', 'Unknown Title'),
+                                'authors': volume_info.get('authors', ['Unknown Author'])[0],
+                                'cover_url': volume_info.get('imageLinks', {}).get('thumbnail', ''),
+                                'isbn_13': next((id_info['identifier'] for id_info in volume_info.get('industryIdentifiers', [])
+                                          if id_info['type'] == 'ISBN_13'), None),
+                                'page_count': volume_info.get('pageCount', 0),
+                        }
+                    search_results.append(book_data)
+        except requests.RequestException as e:
+            print(f"Error fetching books: {e}")
