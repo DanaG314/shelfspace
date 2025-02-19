@@ -10,6 +10,8 @@ body {
 
 .book-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .book-card:hover {
@@ -53,6 +55,11 @@ body {
     }
 }
 
+
+.loading {
+    position: relative;
+}
+
 .loading-spinner {
     border: 3px solid #f3f3f3;
     border-top: 3px solid #059669;
@@ -60,6 +67,19 @@ body {
     width: 24px;
     height: 24px;
     animation: spin 1s linear infinite;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @keyframes spin {
