@@ -80,13 +80,13 @@ def book_search(request):
                         book_data = {
                             'id': item.get('id'),
                             'title': volume_info.get('title', ''),
-                            'authors': ', '.join(volume_info.get('authors', [])),
+                            'author': volume_info.get('authors', ['Unknown Author'])[0],
                             'cover_url': cover_url,
                             'isbn_13': next((id.get('identifier') for id in volume_info.get('industryIdentifiers', []) 
                                           if id.get('type') == 'ISBN_13'), None),
                             'page_count': volume_info.get('pageCount', 0)
                         }
-                        print(f"Processing book: {book_data['title']} by {book_data['authors']}")
+                        print(f"Processing book: {book_data['title']} by {book_data['author']}")
                         search_results.append(book_data)
                 else:
                     error = "No books found matching your search."
@@ -125,25 +125,54 @@ def book_add(request):
                 book_data = response.json()
                 volume_info = book_data.get('volumeInfo', {})
                 
-                title = volume_info.get('title', '')
-                if len(title) > 200:
-                    title = title[:197] + '...'
+                # Debug raw data
+                print("Raw volume info:", volume_info)
                 
-                authors = volume_info.get('authors', [])
-                author_string = ', '.join(authors)
-                if len(author_string) > 200:
-                    author_string = author_string[:197] + '...'
+                # Get raw values first
+                raw_title = volume_info.get('title', '')
+                raw_authors = volume_info.get('authors', ['Unknown Author'])
+                raw_author_string = ', '.join(raw_authors)
                 
-                book = Book.objects.create(
-                    user=request.user,
-                    title=title,
-                    author=author_string,
-                    cover_url=volume_info.get('imageLinks', {}).get('thumbnail', '').replace('http://', 'https://'),
-                    isbn13=next((id.get('identifier') for id in volume_info.get('industryIdentifiers', []) 
-                               if id.get('type') == 'ISBN_13'), None),
-                    total_pages=volume_info.get('pageCount', 0),
-                    status='plan_to_read'
-                )
+                print(f"Raw title (length {len(raw_title)}): {raw_title}")
+                print(f"Raw authors: {raw_authors}")
+                print(f"Raw author string (length {len(raw_author_string)}): {raw_author_string}")
+                
+                # Truncate if needed
+                title = raw_title[:497] + '...' if len(raw_title) > 500 else raw_title
+                author_string = raw_author_string[:497] + '...' if len(raw_author_string) > 500 else raw_author_string
+                
+                print(f"Final title (length {len(title)}): {title}")
+                print(f"Final author string (length {len(author_string)}): {author_string}")
+                
+                # Process cover URL
+                cover_url = volume_info.get('imageLinks', {}).get('thumbnail', '')
+                if cover_url:
+                    cover_url = cover_url.replace('http://', 'https://')
+                    print(f"Cover URL (length {len(cover_url)}): {cover_url}")
+                    cover_url = cover_url[:200]  # Truncate if needed
+                
+                try:
+                    # Process ISBN-13
+                    isbn13 = None
+                    industry_identifiers = volume_info.get('industryIdentifiers', [])
+                    for identifier in industry_identifiers:
+                        if identifier.get('type') == 'ISBN_13':
+                            isbn13 = identifier.get('identifier', '')[:13]
+                            print(f"ISBN-13: {isbn13}")
+                            break
+
+                    book = Book.objects.create(
+                        user=request.user,
+                        title=title[:500],  # Match model field length
+                        author=author_string[:500],  # Match model field length
+                        cover_url=cover_url,
+                        isbn13=isbn13,
+                        total_pages=volume_info.get('pageCount', 0),
+                        status='plan_to_read'
+                    )
+                except Exception as field_error:
+                    print(f"Field error: {str(field_error)}")
+                    raise Exception(f"Error with book fields: {str(field_error)}")
                 
                 messages.success(request, f'"{book.title}" has been added to your bookshelf!')
                 return redirect('bookshelf')
