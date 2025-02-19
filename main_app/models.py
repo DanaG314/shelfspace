@@ -12,8 +12,8 @@ class Book(models.Model):
         ('plan_to_read', 'Plan to Read'),
     ]
 
-    title = models.CharField(max_length=200)
-    author = models.CharField(max_length=200)
+    title = models.CharField(max_length=500)
+    author = models.CharField(max_length=500)
     cover_url = models.URLField(blank=True, null=True)
     isbn13 = models.CharField(max_length=13, blank=True, null=True)
     total_pages =models.IntegerField(default=0)

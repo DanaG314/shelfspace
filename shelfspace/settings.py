@@ -13,13 +13,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
-import environ
-env = environ.Env()
-environ.Env()
-environ.Env.read_env()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Initialize environ
+import environ
+env = environ.Env()
+# Read .env file
+environ.Env.read_env(os.path.join(BASE_DIR, 'shelfspace/.env'))
+
+# Print loaded API key for debugging
+print(f"Loaded API key: {env('GOOGLE_BOOKS_API_KEY')}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
