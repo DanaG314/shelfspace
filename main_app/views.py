@@ -12,9 +12,10 @@ from time import sleep
 from urllib.parse import quote
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import DeleteView
 from django import forms
 from django.utils import timezone
+
 
 class Home(LoginView):
     template_name = 'home.html'
@@ -32,6 +33,11 @@ class BookForm(forms.ModelForm):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+    
+class BookDelete(DeleteView):
+    model = Book
+    success_url = '/bookshelf/'
+
 
 def about(request):
     return render(request, 'about.html')
@@ -226,3 +232,4 @@ def book_add(request):
             print(f"Author length: {len(author_string)}")
     
     return redirect('book-search')
+
