@@ -10,7 +10,7 @@
   {% endif %}
 </div>
 
-<form action="" method="post" class="form-container">
+<form action="{% url 'book-add' %}" method="post" class="form-container">
   {% csrf_token %}
   <table>
     {{ form.as_table }}

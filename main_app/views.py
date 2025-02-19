@@ -13,14 +13,21 @@ from urllib.parse import quote
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic.edit import CreateView
+from django import forms
+from django.utils import timezone
 
 class Home(LoginView):
     template_name = 'home.html'
 
-class BookCreate(CreateView):
-    model = Book
-    fields = ['notes', 'status']
-    success_url= '/bookshelf/'
+# class BookCreate(CreateView):
+#     model = Book
+#     fields = ['notes', 'status']
+#     success_url= '/bookshelf/'
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['notes', 'status']
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -120,6 +127,35 @@ def book_search(request):
 
 
 @login_required
+def update_notes(request, book_id):
+    if request.method == 'POST':
+        book = Book.objects.get(id=book_id)
+        book.notes = request.POST.get('notes', '')
+        book.save()
+        messages.success(request, 'Notes updated successfully!')
+    return redirect('bookshelf-detail', book_id=book_id)
+
+@login_required
+def update_progress(request, book_id):
+    if request.method == 'POST':
+        book = Book.objects.get(id=book_id)
+        new_page = int(request.POST.get('current_page', 0))
+        
+        new_page = max(0, min(new_page, book.total_pages))
+        book.current_page = new_page
+        
+        if new_page == book.total_pages:
+            book.status = 'completed'
+        elif new_page > 0 and book.status == 'plan_to_read':
+            book.status = 'reading'
+            if not book.started_at:
+                book.started_at = timezone.now()
+        
+        book.save()
+        messages.success(request, 'Reading progress updated!')
+    return redirect('bookshelf-detail', book_id=book_id)
+
+@login_required
 def book_add(request):
     if request.method == 'POST':
         google_books_id = request.POST.get('google_books_id')
@@ -151,7 +187,7 @@ def book_add(request):
                 print(f"Final title (length {len(title)}): {title}")
                 print(f"Final author string (length {len(author_string)}): {author_string}")
                 
-                cover_url = volume_info.get('imageLinks', {}).get('medium', '')
+                cover_url = volume_info.get('imageLinks', {}).get('thumbnail', '')
                 if cover_url:
                     cover_url = cover_url.replace('http://', 'https://')
                     print(f"Cover URL (length {len(cover_url)}): {cover_url}")
