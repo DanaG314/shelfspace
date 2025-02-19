@@ -135,10 +135,8 @@ def book_add(request):
                 book_data = response.json()
                 volume_info = book_data.get('volumeInfo', {})
                 
-                # Debug raw data
                 print("Raw volume info:", volume_info)
                 
-                # Get raw values first
                 raw_title = volume_info.get('title', '')
                 raw_authors = volume_info.get('authors', ['Unknown Author'])
                 raw_author_string = ', '.join(raw_authors)
@@ -147,22 +145,19 @@ def book_add(request):
                 print(f"Raw authors: {raw_authors}")
                 print(f"Raw author string (length {len(raw_author_string)}): {raw_author_string}")
                 
-                # Truncate if needed
                 title = raw_title[:497] + '...' if len(raw_title) > 500 else raw_title
                 author_string = raw_author_string[:497] + '...' if len(raw_author_string) > 500 else raw_author_string
                 
                 print(f"Final title (length {len(title)}): {title}")
                 print(f"Final author string (length {len(author_string)}): {author_string}")
                 
-                # Process cover URL
-                cover_url = volume_info.get('imageLinks', {}).get('thumbnail', '')
+                cover_url = volume_info.get('imageLinks', {}).get('medium', '')
                 if cover_url:
                     cover_url = cover_url.replace('http://', 'https://')
                     print(f"Cover URL (length {len(cover_url)}): {cover_url}")
-                    cover_url = cover_url[:200]  # Truncate if needed
+                    cover_url = cover_url[:200]
                 
                 try:
-                    # Process ISBN-13
                     isbn13 = None
                     industry_identifiers = volume_info.get('industryIdentifiers', [])
                     for identifier in industry_identifiers:
@@ -173,8 +168,8 @@ def book_add(request):
 
                     book = Book.objects.create(
                         user=request.user,
-                        title=title[:500],  # Match model field length
-                        author=author_string[:500],  # Match model field length
+                        title=title[:500],
+                        author=author_string[:500],
                         cover_url=cover_url,
                         isbn13=isbn13,
                         total_pages=volume_info.get('pageCount', 0),
