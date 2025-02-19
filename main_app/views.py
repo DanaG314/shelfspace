@@ -41,7 +41,7 @@ def bookshelf(request):
 def book_detail(request, book_id):
     book = Book.objects.get(id=book_id)
     return render(request, 'books/detail.html', {
-        'bookshelf': bookshelf,
+        'book': book,
     })
 
 def book_search(request):
