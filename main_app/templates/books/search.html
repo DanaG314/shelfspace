@@ -51,7 +51,6 @@
               {% csrf_token %}
               <input type="hidden" name="google_books_id" value="{{ book.id }}">
               <button  type="submit" class="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors">
-                Add to Bookshelf
               </button>
             </form>
           </div>
@@ -62,7 +61,6 @@
         <div class="col-span-full text-center py-12">
           <h3 class="text-lg font-medium text-gray-900">No books found</h3>
           <p class="mt-2 text-sm text-gray-600">
-            Try searching with different keywords
           </p>
         </div>
       {% endif %}
