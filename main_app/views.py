@@ -12,9 +12,19 @@ from time import sleep
 from urllib.parse import quote
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.views.generic.edit import CreateView
 
 class Home(LoginView):
     template_name = 'home.html'
+
+class BookCreate(CreateView):
+    model = Book
+    fields = ['notes', 'status']
+    success_url= '/bookshelf/'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 def about(request):
     return render(request, 'about.html')
