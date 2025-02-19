@@ -1,96 +1,101 @@
-{% extends 'base.html' %} 
-{% load static %} 
-{% block head %}
+{% extends 'base.html' %} {% load static %} {% block head %}
 <link rel="stylesheet" href="{% static 'css/books/book-detail.css' %}" />
-{% endblock %} 
-{% block content %}
+{% endblock %} {% block content %}
 <div class="main-container">
-    <h1 class="page-title">My Books</h1>
+  <h1 class="page-title">My Books</h1>
+
+  <!-- Status Filter -->
+  <div class="status-filters">
+    <a
+      href="?status=reading"
+      class="status-filter {% if request.GET.status == 'reading' %}active reading{% endif %}"
+    >
+      Reading
+    </a>
+    <a
+      href="?status=completed"
+      class="status-filter {% if request.GET.status == 'completed' %}active completed{% endif %}"
+    >
+      Completed
+    </a>
+    <a
+      href="?status=plan_to_read"
+      class="status-filter {% if request.GET.status == 'plan_to_read' %}active plan{% endif %}"
+    >
+      Plan to Read
+    </a>
+  </div>
+ 
+      <!-- Book Cover -->
+      <div class="book-cover-container">
+        {% if book.cover_url %}
+        <img
+          src="{{ book.cover_url }}"
+          alt="{{ book.title }}"
+          class="book-cover"
+        />
+        {% else %}
+        <div class="book-cover-placeholder">
+          <span>No Cover Available</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Book Info -->
+      <h2 class="book-title">{{ book.title }}</h2>
+      <p class="book-author">by {{ book.author }}</p>
+
+      <!-- Status Badge -->
+      <div class="status-badge {{ book.status }}">
+        {{ book.get_status_display }}
+      </div>
+
+      <!-- Progress Bar -->
+      {% if book.status == 'reading' %}
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ book.progress }}%"></div>
+        </div>
+        <p class="progress-text">
+          {{ book.current_page }} / {{ book.total_pages }} pages ({{
+          book.progress }}%)
+        </p>
+      </div>
+      {% endif %}
+
+      <!-- Dates -->
+      {% if book.started_at %}
+      <p class="book-date">Started: {{ book.started_at|date:"M d, Y" }}</p>
+      {% endif %}
+
+      <!-- Notes Preview -->
+      {% if book.notes %}
+      <div class="book-notes">
+        <h3>Notes:</h3>
+        <p>{{ book.notes|truncatewords:30 }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Actions -->
+      {% comment %} <div class="book-actions"> {% endcomment %}
+        {% comment %} <a href="{% url 'book_update' book.id %}" class="btn btn-edit"> Edit </a> {% endcomment %}
+        {% comment %} <a href="{% url 'book_delete' book.id %}" class="btn btn-delete"> Delete </a> {% endcomment %}
+      {% comment %} </div>  {% endcomment %}
+    {% comment %} </div> {% endcomment %}
+    {% if not book %}
+    <div class="empty-state">
+      <p>No books found. Start adding some!</p>
+    </div>
     
-    <!-- Status Filter -->
-    <div class="status-filters">
-        <a href="?status=reading" class="status-filter {% if request.GET.status == 'reading' %}active reading{% endif %}">
-            Reading
-        </a>
-        <a href="?status=completed" class="status-filter {% if request.GET.status == 'completed' %}active completed{% endif %}">
-            Completed
-        </a>
-        <a href="?status=plan_to_read" class="status-filter {% if request.GET.status == 'plan_to_read' %}active plan{% endif %}">
-            Plan to Read
-        </a>
-    </div>
+  </div>
 
-    <!-- Book Grid -->
-    <div class="book-grid">
-        {% for book in books %}
-        <div class="book-card">
-            <!-- Book Cover -->
-            <div class="book-cover-container">
-                {% if book.cover_url %}
-                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="book-cover">
-                {% else %}
-                    <div class="book-cover-placeholder">
-                        <span>No Cover Available</span>
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- Book Info -->
-            <h2 class="book-title">{{ book.title }}</h2>
-            <p class="book-author">by {{ book.author }}</p>
-            
-            <!-- Status Badge -->
-            <div class="status-badge {{ book.status }}">
-                {{ book.get_status_display }}
-            </div>
-
-            <!-- Progress Bar -->
-            {% if book.status == 'reading' %}
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ book.progress }}%"></div>
-                </div>
-                <p class="progress-text">
-                    {{ book.current_page }} / {{ book.total_pages }} pages ({{ book.progress }}%)
-                </p>
-            </div>
-            {% endif %}
-
-            <!-- Dates -->
-            {% if book.started_at %}
-            <p class="book-date">Started: {{ book.started_at|date:"M d, Y" }}</p>
-            {% endif %}
-            
-            <!-- Notes Preview -->
-            {% if book.notes %}
-            <div class="book-notes">
-                <h3>Notes:</h3>
-                <p>{{ book.notes|truncatewords:30 }}</p>
-            </div>
-            {% endif %}
-
-            <!-- Actions -->
-            <div class="book-actions">
-                {% comment %} <a href="{% url 'book_update' book.id %}" class="btn btn-edit"> {% endcomment %}
-                    Edit
-                </a>
-                {% comment %} <a href="{% url 'book_delete' book.id %}" class="btn btn-delete"> {% endcomment %}
-                    Delete
-                </a>
-            </div>
-        </div>
-        {% empty %}
-        <div class="empty-state">
-            <p>No books found. Start adding some!</p>
-        </div>
-        {% endfor %}
-    </div>
-
-    <!-- Add New Book Button -->
-    <div class="add-book-container">
-        {% comment %} <a href="{% url 'book_create' %}" class="btn btn-add"> {% endcomment %}
-            Add New Book
-        </a>
-    </div>
+  <!-- Add New Book Button -->
+  <div class="add-book-container">
+    {% comment %}
+    <a href="{% url 'book_create' %}" class="btn btn-add">
+      {% endcomment %} Add New Book
+    </a>
+  </div>
 </div>
+{% endif %}
 {% endblock %}
