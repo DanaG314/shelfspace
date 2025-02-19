@@ -43,7 +43,7 @@ ShelfSpace{%endblock%} {% block content %}
   </a>
 </div>
     <!-- Book Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-8">
       {% for book in books %}
       <div class="group">
         <a href="{% url 'bookshelf-detail' book.id %}" class="block">
@@ -52,17 +52,17 @@ ShelfSpace{%endblock%} {% block content %}
             <img
               src="{{ book.cover_url }}"
               alt="{{ book.title }}"
-              class="w-full aspect-[3/4] object-cover rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-200"
+              class="w-[85%] mx-auto aspect-[3/4] object-cover rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-200"
             />
             {% else %}
             <div
-              class="w-full aspect-[3/4] bg-gray-100 rounded-lg flex items-center justify-center"
+              class="w-[85%] mx-auto aspect-[3/4] bg-gray-100 rounded-lg flex items-center justify-center"
             >
               <span class="text-gray-400">No cover</span>
             </div>
             {% endif %}
           </div>
-          <div class="mt-4">
+          <div class="mt-4 w-[85%] mx-auto">
             <h3 class="text-lg font-medium text-gray-900 truncate">
               {{ book.title }}
             </h3>
