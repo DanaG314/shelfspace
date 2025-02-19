@@ -107,3 +107,52 @@ def book_search(request):
         'error': error,
         'query': request.GET.get('q', '')
     })
+
+
+@login_required
+def book_add(request):
+    if request.method == 'POST':
+        google_books_id = request.POST.get('google_books_id')
+        
+        api_url = f'https://www.googleapis.com/books/v1/volumes/{google_books_id}'
+        params = {
+            'key': settings.GOOGLE_BOOKS_API_KEY
+        }
+        
+        try:
+            response = requests.get(api_url, params=params)
+            if response.status_code == 200:
+                book_data = response.json()
+                volume_info = book_data.get('volumeInfo', {})
+                
+                title = volume_info.get('title', '')
+                if len(title) > 200:
+                    title = title[:197] + '...'
+                
+                authors = volume_info.get('authors', [])
+                author_string = ', '.join(authors)
+                if len(author_string) > 200:
+                    author_string = author_string[:197] + '...'
+                
+                book = Book.objects.create(
+                    user=request.user,
+                    title=title,
+                    author=author_string,
+                    cover_url=volume_info.get('imageLinks', {}).get('thumbnail', '').replace('http://', 'https://'),
+                    isbn13=next((id.get('identifier') for id in volume_info.get('industryIdentifiers', []) 
+                               if id.get('type') == 'ISBN_13'), None),
+                    total_pages=volume_info.get('pageCount', 0),
+                    status='plan_to_read'
+                )
+                
+                messages.success(request, f'"{book.title}" has been added to your bookshelf!')
+                return redirect('bookshelf')
+            else:
+                messages.error(request, 'Could not fetch book details. Please try again.')
+        except Exception as e:
+            messages.error(request, f'Error adding book: {str(e)}')
+            print(f"Error in book_add: {str(e)}")
+            print(f"Title length: {len(title)}")
+            print(f"Author length: {len(author_string)}")
+    
+    return redirect('book-search')
