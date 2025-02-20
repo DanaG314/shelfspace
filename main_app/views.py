@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.views.generic.edit import DeleteView
 from django import forms
 from django.utils import timezone
+from django.db.models import Q
 
 
 class Home(TemplateView):
@@ -238,3 +239,23 @@ def book_add(request):
     
     return redirect('book-search')
 
+
+@login_required
+def bookshelf(request):
+    books = Book.objects.filter(user=request.user)
+    
+    # Add search filter
+    search_query = request.GET.get('search', '')
+    if search_query:
+        books = books.filter(
+            Q(title__icontains=search_query) | 
+            Q(author__icontains=search_query)
+        )
+    
+    # Keep default ordering
+    books = books.order_by('-updated_at')
+    
+    return render(request, 'books/bookshelf.html', {
+        'books': books,
+        'search_query': search_query,
+    })
