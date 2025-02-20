@@ -12,14 +12,22 @@ class Book(models.Model):
         ('plan_to_read', 'Plan to Read'),
     ]
 
+    RATING_CHOICES = [
+        (1, '★'),
+        (2, '★★'),
+        (3, '★★★'),
+        (4, '★★★★'),
+        (5, '★★★★★'),
+    ]
+
     title = models.CharField(max_length=500)
     author = models.CharField(max_length=500)
     cover_url = models.URLField(blank=True, null=True)
     isbn13 = models.CharField(max_length=13, blank=True, null=True)
-    total_pages =models.IntegerField(default=0)
-    current_page =models.IntegerField(default=0)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='plan_to_read'
-    )
+    total_pages = models.IntegerField(default=0)
+    current_page = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='plan_to_read')
+    rating = models.IntegerField(choices=RATING_CHOICES, null=True, blank=True)
     notes = models.TextField(blank=True)
     started_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

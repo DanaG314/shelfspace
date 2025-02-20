@@ -102,9 +102,11 @@ def book_search(request):
                         volume_info = item.get('volumeInfo', {})
                         image_links = volume_info.get('imageLinks', {})
                         
-                        cover_url = image_links.get('thumbnail', '')
+                        # Try to get larger image first, fall back to thumbnail
+                        cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                         if cover_url:
-                            cover_url = cover_url.replace('http://', 'https://')
+                            # Replace zoom level to get higher quality image
+                            cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                         
                         book_data = {
                             'id': item.get('id'),
@@ -199,9 +201,12 @@ def book_add(request):
                 print(f"Final title (length {len(title)}): {title}")
                 print(f"Final author string (length {len(author_string)}): {author_string}")
                 
-                cover_url = volume_info.get('imageLinks', {}).get('thumbnail', '')
+                # Try to get larger image first, fall back to thumbnail
+                image_links = volume_info.get('imageLinks', {})
+                cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                 if cover_url:
-                    cover_url = cover_url.replace('http://', 'https://')
+                    # Replace zoom level to get higher quality image
+                    cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                     print(f"Cover URL (length {len(cover_url)}): {cover_url}")
                     cover_url = cover_url[:200]
                 
@@ -239,6 +244,19 @@ def book_add(request):
     
     return redirect('book-search')
 
+
+@login_required
+def update_rating(request, book_id):
+    if request.method == 'POST':
+        book = Book.objects.get(id=book_id)
+        rating = request.POST.get('rating')
+        if rating:
+            book.rating = int(rating)
+        else:
+            book.rating = None
+        book.save()
+        messages.success(request, 'Rating updated successfully!')
+    return redirect('bookshelf-detail', book_id=book_id)
 
 @login_required
 def bookshelf(request):
