@@ -24,10 +24,8 @@ class Home(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get 4 most recently added books (no user filter)
         context['recent_books'] = Book.objects.all().order_by('-created_at')[:4]
         
-        # Add login form for non-authenticated users
         if not self.request.user.is_authenticated:
             context['form'] = AuthenticationForm()
         return context
@@ -102,10 +100,10 @@ def book_search(request):
                         volume_info = item.get('volumeInfo', {})
                         image_links = volume_info.get('imageLinks', {})
                         
-                        # Try to get larger image first, fall back to thumbnail
+
                         cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                         if cover_url:
-                            # Replace zoom level to get higher quality image
+
                             cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                         
                         book_data = {
@@ -201,11 +199,11 @@ def book_add(request):
                 print(f"Final title (length {len(title)}): {title}")
                 print(f"Final author string (length {len(author_string)}): {author_string}")
                 
-                # Try to get larger image first, fall back to thumbnail
+
                 image_links = volume_info.get('imageLinks', {})
                 cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                 if cover_url:
-                    # Replace zoom level to get higher quality image
+
                     cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                     print(f"Cover URL (length {len(cover_url)}): {cover_url}")
                     cover_url = cover_url[:200]
@@ -256,6 +254,19 @@ def update_rating(request, book_id):
             book.rating = None
         book.save()
         messages.success(request, 'Rating updated successfully!')
+    return redirect('bookshelf-detail', book_id=book_id)
+
+@login_required
+def update_status(request, book_id):
+    if request.method == 'POST':
+        book = Book.objects.get(id=book_id)
+        status = request.POST.get('status')
+        if status:
+            book.status = status
+            if status == 'reading' and not book.started_at:
+                book.started_at = timezone.now()
+        book.save()
+        messages.success(request, 'Status updated successfully!')
     return redirect('bookshelf-detail', book_id=book_id)
 
 @login_required
