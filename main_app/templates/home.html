@@ -1,47 +1,87 @@
-{% extends 'base.html' %} {% load static %} {% block head %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}" />
-{% endblock %} {% block content %}
-<section class="hero">
-  {% if not user.is_authenticated %}
-  <div class="auth-section">
-    <form action="{% url 'home' %}" method="post" class="login">
-      <h1>Login</h1>
-      {% csrf_token %} {{ form.as_p }}
-      <input type="hidden" name="next" value="{{ next }}" />
-      <button type="submit" class="btn submit">Login</button>
-    </form>
+{% extends 'base.html' %}
+{% block content %}
+<section class="px-8 py-12 max-w-7xl mx-auto min-h-[calc(100vh-4rem)] flex flex-col gap-12">
+  <div class="text-center max-w-3xl mx-auto">
+    <h1 class="text-4xl font-bold text-emerald-600 mb-6">Welcome to ShelfSpace</h1>
+    <p class="text-xl text-gray-600 leading-relaxed">
+      Your personal digital library companion. Track your reading journey, discover new books,
+      and join a community of book lovers. Keep track of what you're reading, what you've read,
+      and what you want to read next.
+    </p>
   </div>
-  {% endif %} {% if user.is_authenticated %}
-  <div class="recent-books">
-    <h2>Recently Added Books</h2>
-    <div class="books-grid">
+
+  {% if not user.is_authenticated %}
+  <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-800 text-center mb-2">Join ShelfSpace</h2>
+    <p class="text-gray-600 text-center mb-6">Sign in to start tracking your reading journey</p>
+    <form action="{% url 'home' %}" method="post" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="space-y-2">
+        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+          {{ field.label }}
+        </label>
+        <input type="{{ field.field.widget.input_type }}" 
+               name="{{ field.html_name }}"
+               id="{{ field.id_for_label }}"
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+               {% if field.field.required %}required{% endif %}>
+        {% if field.errors %}
+        <p class="text-red-600 text-sm">{{ field.errors.0 }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <input type="hidden" name="next" value="{{ next }}" />
+      <button type="submit" class="w-full bg-emerald-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-emerald-700 transition-colors">
+        Login
+      </button>
+    </form>
+    <p class="mt-4 text-center text-gray-600">
+      Don't have an account? 
+      <a href="{% url 'signup' %}" class="text-emerald-600 font-medium hover:underline">Sign up</a>
+    </p>
+  </div>
+  {% endif %}
+
+  <div class="bg-gray-50 p-8 rounded-xl shadow-sm">
+    <h2 class="text-3xl font-semibold text-gray-800 text-center mb-8">Recently Added Books</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {% for book in recent_books %}
-      <div class="book-card">
-        <a href="{% url 'bookshelf-detail' book.id %}">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
+        <a href="{% url 'bookshelf-detail' book.id %}" class="flex flex-col h-full">
           {% if book.cover_url %}
           <img
             src="{{ book.cover_url }}"
             alt="{{ book.title }}"
-            class="book-cover"
+            class="w-full h-64 object-cover"
           />
           {% else %}
-          <div class="no-cover">
+          <div class="w-full h-64 bg-gray-100 flex items-center justify-center p-4 text-gray-500 italic">
             <span>{{ book.title }}</span>
           </div>
           {% endif %}
-          <div class="book-info">
-            <h3>{{ book.title }}</h3>
-            <p>{{ book.author }}</p>
-            <span class="status {{ book.status }}"
-              >{{ book.get_status_display }}</span
+          <div class="p-4 flex flex-col flex-grow">
+            <h3 class="font-semibold text-gray-800 mb-2 line-clamp-2">{{ book.title }}</h3>
+            <p class="text-gray-600 mb-4">{{ book.author }}</p>
+            <span class="mt-auto px-3 py-1 rounded-full text-sm font-medium
+              {% if book.status == 'reading' %}
+                bg-blue-100 text-blue-800
+              {% elif book.status == 'completed' %}
+                bg-green-100 text-green-800
+              {% else %}
+                bg-orange-100 text-orange-800
+              {% endif %}
+              inline-block"
             >
+              {{ book.get_status_display }}
+            </span>
           </div>
         </a>
       </div>
       {% empty %}
-      <p class="no-books">No books added yet.</p>
+      <p class="col-span-full text-center text-gray-500 italic py-8">No books added yet.</p>
       {% endfor %}
     </div>
   </div>
 </section>
-{% endif %} {% endblock %}
+{% endblock %}
