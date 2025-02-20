@@ -77,6 +77,7 @@ ShelfSpace{%endblock%} {% block content %}
             <img
               src="{{ book.cover_url }}"
               alt="{{ book.title }}"
+              class="w-[85%] h-64 mx-auto object-contain rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-200 pt-4"
             />
             {% else %}
             <div
@@ -90,6 +91,11 @@ ShelfSpace{%endblock%} {% block content %}
             <h3 class="text-lg font-medium text-gray-900 truncate">
               {{ book.title }}
             </h3>
+            {% if book.rating %}
+            <div class="text-yellow-400 text-sm">
+              {{ book.get_rating_display }}
+            </div>
+            {% endif %}
             <p class="text-sm text-gray-600">{{ book.author }}</p>
             <div class="mt-2">
               <div class="flex items-center">
