@@ -244,6 +244,23 @@ def book_add(request):
 
 
 @login_required
+<<<<<<< HEAD
+=======
+def update_status(request, book_id):
+    if request.method == 'POST':
+        book = Book.objects.get(id=book_id)
+        new_status = request.POST.get('status')
+        if new_status in dict(Book.STATUS_CHOICES):
+            book.status = new_status
+            if new_status == 'reading' and not book.started_at:
+                book.started_at = timezone.now()
+            book.save()
+            messages.success(request, 'Status updated successfully!')
+    return redirect('bookshelf-detail', book_id=book_id)
+
+
+@login_required
+>>>>>>> e261004f48fe467667f3262a062a7fa041721c74
 def update_rating(request, book_id):
     if request.method == 'POST':
         book = Book.objects.get(id=book_id)
@@ -257,6 +274,7 @@ def update_rating(request, book_id):
     return redirect('bookshelf-detail', book_id=book_id)
 
 @login_required
+<<<<<<< HEAD
 def update_status(request, book_id):
     if request.method == 'POST':
         book = Book.objects.get(id=book_id)
@@ -270,6 +288,8 @@ def update_status(request, book_id):
     return redirect('bookshelf-detail', book_id=book_id)
 
 @login_required
+=======
+>>>>>>> e261004f48fe467667f3262a062a7fa041721c74
 def bookshelf(request):
     books = Book.objects.filter(user=request.user)
     
