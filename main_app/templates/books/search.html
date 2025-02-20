@@ -50,7 +50,8 @@
             <form action="{% url 'book-add' %}" method="POST" class="mt-4">
               {% csrf_token %}
               <input type="hidden" name="google_books_id" value="{{ book.id }}">
-              <button  type="submit" class="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors">
+              <button type="submit" class="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors">
+                Add to Bookshelf
               </button>
             </form>
           </div>
