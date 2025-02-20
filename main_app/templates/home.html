@@ -1,12 +1,47 @@
 {% extends 'base.html' %} {% load static %} {% block head %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}" />
-{% endblock %} {% block content %} {% if not user.is_authenticated %}
-<section>
-  <form action="{% url 'home' %}" method="post" class="login">
-    <h1>Login</h1>
-    {% csrf_token %} {{ form.as_p }}
-    <input type="hidden" name="next" value="{{ next }}" />
-    <button type="submit" class="btn submit">Login</button>
-  </form>
+{% endblock %} {% block content %}
+<section class="hero">
+  {% if not user.is_authenticated %}
+  <div class="auth-section">
+    <form action="{% url 'home' %}" method="post" class="login">
+      <h1>Login</h1>
+      {% csrf_token %} {{ form.as_p }}
+      <input type="hidden" name="next" value="{{ next }}" />
+      <button type="submit" class="btn submit">Login</button>
+    </form>
+  </div>
+  {% endif %} {% if user.is_authenticated %}
+  <div class="recent-books">
+    <h2>Recently Added Books</h2>
+    <div class="books-grid">
+      {% for book in recent_books %}
+      <div class="book-card">
+        <a href="{% url 'bookshelf-detail' book.id %}">
+          {% if book.cover_url %}
+          <img
+            src="{{ book.cover_url }}"
+            alt="{{ book.title }}"
+            class="book-cover"
+          />
+          {% else %}
+          <div class="no-cover">
+            <span>{{ book.title }}</span>
+          </div>
+          {% endif %}
+          <div class="book-info">
+            <h3>{{ book.title }}</h3>
+            <p>{{ book.author }}</p>
+            <span class="status {{ book.status }}"
+              >{{ book.get_status_display }}</span
+            >
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <p class="no-books">No books added yet.</p>
+      {% endfor %}
+    </div>
+  </div>
 </section>
 {% endif %} {% endblock %}

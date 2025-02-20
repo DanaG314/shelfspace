@@ -2,9 +2,9 @@ import requests
 from django.shortcuts import render, redirect
 from main_app.models import Book
 from django.http import HttpResponse
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login
 from django.conf import settings
 from django.core.cache import cache
@@ -17,22 +17,26 @@ from django import forms
 from django.utils import timezone
 
 
-class Home(LoginView):
+class Home(TemplateView):
     template_name = 'home.html'
 
-# class BookCreate(CreateView):
-#     model = Book
-#     fields = ['notes', 'status']
-#     success_url= '/bookshelf/'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get 4 most recently added books (no user filter)
+        context['recent_books'] = Book.objects.all().order_by('-created_at')[:4]
+        
+        # Add login form for non-authenticated users
+        if not self.request.user.is_authenticated:
+            context['form'] = AuthenticationForm()
+        return context
 
-class BookForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = ['notes', 'status']
+    def post(self, request, *args, **kwargs):
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect('bookshelf')
+        return self.render_to_response(self.get_context_data(form=form))
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
     
 class BookDelete(DeleteView):
     model = Book
