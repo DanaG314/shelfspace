@@ -77,7 +77,7 @@ ShelfSpace{%endblock%} {% block content %}
             <img
               src="{{ book.cover_url }}"
               alt="{{ book.title }}"
-              class="w-[85%] mx-auto aspect-[3/4] object-cover rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-200"
+              class="w-[85%] mx-auto aspect-[3/4] object-contain rounded-lg shadow-sm group-hover:shadow-md transition-shadow duration-200"
             />
             {% else %}
             <div
