@@ -19,6 +19,7 @@ from django.utils import timezone
 
 class Home(LoginView):
     template_name = 'home.html'
+    success_url = '/bookshelf/'
 
 # class BookCreate(CreateView):
 #     model = Book
