@@ -25,6 +25,7 @@ class Book(models.Model):
     author = models.CharField(max_length=500)
     cover_url = models.URLField(blank=True, null=True)
     isbn13 = models.CharField(max_length=13, blank=True, null=True)
+    summary = models.TextField(blank=True, null=True)
     total_pages = models.IntegerField(default=0)
     current_page = models.IntegerField(default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='plan_to_read')
@@ -42,9 +43,11 @@ class Book(models.Model):
     
     @property 
     def progress(self):
-        if self.total_pages ==0:
+        if self.status == 'completed':
+            return 100
+        if self.total_pages == 0:
             return 0
-        return int((self.current_page / self.total_pages) *100)
+        return int((self.current_page / self.total_pages) * 100)
 
 class Quote(models.Model):
     text = models.TextField()
