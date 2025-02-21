@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -44,3 +45,13 @@ class Book(models.Model):
         if self.total_pages ==0:
             return 0
         return int((self.current_page / self.total_pages) *100)
+
+class Quote(models.Model):
+    text = models.TextField()
+    author = models.CharField(max_length=200)
+    book_title = models.CharField(max_length=500, blank=True, null=True)
+    date_shown = models.DateField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.text[:50]}... - {self.author}"
