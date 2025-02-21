@@ -109,7 +109,9 @@ def book_search(request):
                             'cover_url': cover_url,
                             'isbn_13': next((id.get('identifier') for id in volume_info.get('industryIdentifiers', []) 
                                           if id.get('type') == 'ISBN_13'), None),
-                            'page_count': volume_info.get('pageCount', 0)
+                            'page_count': volume_info.get('pageCount', 0),
+                            'summary': volume_info.get('description', ''),
+                            'description': volume_info.get('description', '')  # Add this for the summary
                         }
                         print(f"Processing book: {book_data['title']} by {book_data['author']}")
                         search_results.append(book_data)
@@ -213,12 +215,19 @@ def book_add(request):
                             print(f"ISBN-13: {isbn13}")
                             break
 
+                    description = volume_info.get('description', '')
+                    if description:
+                        description = description.replace('<p>', '').replace('</p>', '\n\n')
+                        description = description.replace('<br>', '\n').replace('<br/>', '\n')
+                        description = description.replace('&quot;', '"').replace('&amp;', '&')
+                    
                     book = Book.objects.create(
                         user=request.user,
                         title=title[:500],
                         author=author_string[:500],
                         cover_url=cover_url,
                         isbn13=isbn13,
+                        summary=description,
                         total_pages=volume_info.get('pageCount', 0),
                         status='plan_to_read'
                     )
@@ -261,6 +270,8 @@ def update_status(request, book_id):
             book.status = new_status
             if new_status == 'reading' and not book.started_at:
                 book.started_at = timezone.now()
+            elif new_status == 'completed':
+                book.current_page = book.total_pages
             book.save()
             messages.success(request, 'Status updated successfully!')
     return redirect('bookshelf-detail', book_id=book_id)

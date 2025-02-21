@@ -1,109 +1,36 @@
-{% extends 'base.html' %} {% block content %}
-<section
-  class="px-8 py-12 max-w-7xl mx-auto min-h-[calc(100vh-4rem)] flex flex-col gap-12"
->
-  <div class="text-center max-w-3xl mx-auto">
-    <h1 class="text-4xl font-bold text-emerald-600 mb-6">
-      Welcome to ShelfSpace
-    </h1>
-    <p class="text-xl text-gray-600 leading-relaxed">
-      Your personal digital library companion. Track your reading journey,
-      discover new books, and join a community of book lovers. Keep track of
-      what you're reading, what you've read, and what you want to read next.
-    </p>
-  </div>
-
-  {% if not user.is_authenticated %}
-  <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-md">
-    <h2 class="text-2xl font-semibold text-gray-800 text-center mb-2">
-      Join ShelfSpace
-    </h2>
-    <p class="text-gray-600 text-center mb-6">
-      Sign in to start tracking your reading journey
-    </p>
-    <form action="{% url 'home' %}" method="post" class="space-y-4">
-      {% csrf_token %} {% for field in form %}
-      <div class="space-y-2">
-        <label
-          for="{{ field.id_for_label }}"
-          class="block text-sm font-medium text-gray-700"
-        >
-          {{ field.label }}
-        </label>
-        <input
-          type="{{ field.field.widget.input_type }}"
-          name="{{ field.html_name }}"
-          id="{{ field.id_for_label }}"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-          {%
-          if
-          field.field.required
-          %}required{%
-          endif
-          %}
-        />
-        {% if field.errors %}
-        <p class="text-red-600 text-sm">{{ field.errors.0 }}</p>
-        {% endif %}
-      </div>
-      {% endfor %}
-      <input type="hidden" name="next" value="{{ next }}" />
-      <button
-        type="submit"
-        class="w-full bg-emerald-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
-      >
-        Login
-      </button>
-    </form>
-    <p class="mt-4 text-center text-gray-600">
-      Don't have an account?
-      <a
-        href="{% url 'signup' %}"
-        class="text-emerald-600 font-medium hover:underline"
-        >Sign up</a
-      >
-    </p>
-  </div>
-  {% endif %}
-
-  <div class="bg-gray-50 p-8 rounded-xl shadow-sm">
-    <h2 class="text-3xl font-semibold text-gray-800 text-center mb-8">
-      Recently Added Books
-    </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {% for book in recent_books %}
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        {% if book.cover_url %}
-        <img
-          src="{{ book.cover_url }}"
-          alt="{{ book.title }}"
-          class="w-full h-64 object-contain pt-4"
-        />
-        {% else %}
-        <div
-          class="w-full h-64 bg-gray-100 flex items-center justify-center p-4 text-gray-500 italic"
-        >
-          <span>{{ book.title }}</span>
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+  <div class="max-w-md w-full mx-4">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Log In</h2>
+      <form method="post" action="{% url 'home' %}">
+        {% csrf_token %}
+        <div class="space-y-4">
+          <div>
+            <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" name="username" id="id_username" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+          </div>
+          <div>
+            <label for="id_password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" name="password" id="id_password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
+          </div>
+          <div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+              Log In
+            </button>
+          </div>
         </div>
-        {% endif %}
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-semibold text-gray-800 mb-2 line-clamp-2">
-            {{ book.title }}
-          </h3>
-          <p class="text-gray-600 mb-4">{{ book.author }}</p>
-          <span
-            class="mt-auto px-3 py-1 rounded-full text-sm font-medium {% if book.status == 'reading' %} bg-blue-100 text-blue-800 {% elif book.status == 'completed' %} bg-green-100 text-green-800 {% else %} bg-orange-100 text-orange-800 {% endif %} inline-block"
-          >
-            {{ book.get_status_display }}
-          </span>
-        </div>
+      </form>
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+          Don't have an account?
+          <a href="{% url 'signup' %}" class="font-medium text-emerald-600 hover:text-emerald-500">
+            Sign up
+          </a>
+        </p>
       </div>
-      {% empty %}
-      <p class="col-span-full text-center text-gray-500 italic py-8">
-        No books added yet.
-      </p>
-      {% endfor %}
     </div>
   </div>
-</section>
+</div>
 {% endblock %}
