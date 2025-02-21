@@ -1,137 +1,158 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Book Container -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="md:flex">
-            <!-- Book Cover -->
-            <div class="md:w-1/3 p-4">
-                {% if book.cover_url %}
-                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="w-full h-auto rounded-lg shadow object-cover max-h-[500px]">
-                {% else %}
-                    <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <span class="text-gray-400">No Cover Available</span>
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- Book Info -->
-            <div class="md:w-2/3 p-6">
-                <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ book.title }}</h1>
-                <p class="text-lg text-gray-600 mb-4">by {{ book.author }}</p>
-
-                <!-- Rating and Status -->
-                <div class="flex items-center space-x-4 mb-4">
-                    <form method="POST" action="{% url 'update-rating' book.id %}" class="inline-flex items-center">
-                        {% csrf_token %}
-                        <select name="rating" class="rounded-md border-gray-300 py-1 pl-2 pr-8 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" onchange="this.form.submit()">
-                            <option value="">Rate this book</option>
-                            {% for value, stars in book.RATING_CHOICES %}
-                                <option value="{{ value }}" {% if book.rating == value %}selected{% endif %}>{{ stars }}</option>
-                            {% endfor %}
-                        </select>
-                    </form>
-
-                    <form method="POST" action="{% url 'update-status' book.id %}" class="inline-flex items-center">
-                        {% csrf_token %}
-                        <select name="status" class="rounded-md border-gray-300 py-1 pl-2 pr-8 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" onchange="this.form.submit()">
-                            {% for value, label in book.STATUS_CHOICES %}
-                                <option value="{{ value }}" {% if book.status == value %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </form>
-                </div>
-
-                <!-- Status Badge (hidden) -->
-                <div class="hidden inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mb-4
-                    {% if book.status == 'reading' %}bg-blue-100 text-blue-800
-                    {% elif book.status == 'completed' %}bg-green-100 text-green-800
-                    {% else %}bg-gray-100 text-gray-800{% endif %}">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        {% if book.status == 'reading' %}
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        {% elif book.status == 'completed' %}
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        {% else %}
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        {% endif %}
-                    </svg>
-                    {{ book.get_status_display }}
-                </div>
-
-                <!-- Dates -->
-                {% if book.started_at %}
-                <div class="flex items-center text-sm text-gray-600 mb-4">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    Started: {{ book.started_at|date:"M d, Y" }}
-                </div>
-                {% endif %}
-
-                <!-- Actions -->
-                <div class="flex space-x-4 mt-4">
-                    <form action="{% url 'book-remove' book.id  %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            Delete
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Progress Update Form -->
-        {% if book.status != 'completed' %}
-        <div class="p-6 border-t border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Update Progress</h3>
-            <form method="POST" action="{% url 'update-progress' book.id %}">
-                {% csrf_token %}
-                <div class="flex items-center space-x-4">
-                    <div class="flex-1">
-                        <label for="current_page" class="block text-sm font-medium text-gray-700">Current Page</label>
-                        <div class="mt-1 flex rounded-md shadow-sm">
-                            <input type="number" 
-                                   name="current_page" 
-                                   id="current_page"
-                                   min="0"
-                                   max="{{ book.total_pages }}"
-                                   value="{{ book.current_page }}"
-                                   class="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
-                            <span class="inline-flex items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                                of {{ book.total_pages }}
-                            </span>
-                        </div>
-                    </div>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700">
-                        Update Progress
-                    </button>
-                </div>
-            </form>
-        </div>
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="grid grid-cols-12 gap-8">
+    <div class="col-span-3">
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        {% if book.cover_url %}
+          <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="w-full rounded-lg">
+        {% else %}
+          <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+            <span class="text-gray-400">No cover</span>
+          </div>
         {% endif %}
-
-        <!-- Notes Form -->
-        <div class="p-6 border-t border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Book Notes</h3>
-            <form method="POST" action="{% url 'update-notes' book.id %}">
-                {% csrf_token %}
-                <textarea
-                    name="notes"
-                    rows="4"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                    placeholder="Add your notes about this book..."
-                >{{ book.notes }}</textarea>
-                <div class="mt-4 flex justify-end">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700">
-                        Save Notes
-                    </button>
-                </div>
-            </form>
-        </div>
+      </div>
     </div>
+
+    <div class="col-span-6">
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <div class="flex flex-col space-y-6">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ book.title }}</h1>
+            <p class="text-lg text-gray-600">by {{ book.author }}</p>
+          </div>
+
+          <div class="flex items-center space-x-8 text-sm text-gray-600">
+            {% if book.total_pages %}
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              {{ book.total_pages }} pages
+            </div>
+            {% endif %}
+            {% if book.isbn13 %}
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              ISBN: {{ book.isbn13 }}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="bg-gray-50 rounded-lg p-6">
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Rating</h3>
+                <form method="POST" action="{% url 'update-rating' book.id %}" class="inline-flex items-center">
+                  {% csrf_token %}
+                  <select name="rating" class="rounded-md border-gray-300 py-1 pl-2 pr-8 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" onchange="this.form.submit()">
+                    <option value="">Rate this book</option>
+                    {% for value, stars in book.RATING_CHOICES %}
+                      <option value="{{ value }}" {% if book.rating == value %}selected{% endif %}>{{ stars }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </div>
+              <div>
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Status</h3>
+                <form method="POST" action="{% url 'update-status' book.id %}" class="inline-flex items-center">
+                  {% csrf_token %}
+                  <select name="status" class="rounded-md border-gray-300 py-1 pl-2 pr-8 text-base focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" onchange="this.form.submit()">
+                    {% for value, label in book.STATUS_CHOICES %}
+                      <option value="{{ value }}" {% if book.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {% if book.summary %}
+          <div>
+            <p class="text-gray-600 leading-relaxed">{{ book.summary }}</p>
+          </div>
+          {% endif %}
+
+          {% if book.status != 'completed' %}
+          <div class="pt-6 border-t border-gray-200">
+            <form method="POST" action="{% url 'update-progress' book.id %}">
+              {% csrf_token %}
+              <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                  <div class="flex rounded-md shadow-sm">
+                    <input type="number" 
+                           name="current_page" 
+                           id="current_page"
+                           min="0"
+                           max="{{ book.total_pages }}"
+                           value="{{ book.current_page }}"
+                           class="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+                    <span class="inline-flex items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      of {{ book.total_pages }}
+                    </span>
+                  </div>
+                </div>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700">
+                  Update Progress
+                </button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if book.notes %}
+      <div class="mt-8 bg-white rounded-lg shadow-lg p-8">
+        <div class="prose max-w-none">
+          {{ book.notes|linebreaks }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-span-3 space-y-8">
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Book Details</h3>
+        <div class="space-y-4">
+          <div>
+            <h4 class="text-sm font-medium text-gray-500">Added</h4>
+            <p class="text-sm text-gray-900">{{ book.created_at|date:"M d, Y" }}</p>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-500">Last Updated</h4>
+            <p class="text-sm text-gray-900">{{ book.updated_at|date:"M d, Y" }}</p>
+          </div>
+          <div>
+            <h4 class="text-sm font-medium text-gray-500">Reading Stats</h4>
+            <div class="text-sm text-gray-900">
+              <p>Pages Read: {{ book.current_page }} of {{ book.total_pages }}</p>
+              <p>Progress: {{ book.progress }}%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Add Note</h3>
+        <form method="POST" action="{% url 'update-notes' book.id %}">
+          {% csrf_token %}
+          <textarea
+            name="notes"
+            rows="4"
+            class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+            placeholder="Write your note here..."
+          ></textarea>
+          <div class="mt-4 flex justify-end">
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700">
+              Add Note
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
