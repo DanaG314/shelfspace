@@ -110,8 +110,7 @@ def book_search(request):
                             'isbn_13': next((id.get('identifier') for id in volume_info.get('industryIdentifiers', []) 
                                           if id.get('type') == 'ISBN_13'), None),
                             'page_count': volume_info.get('pageCount', 0),
-                            'summary': volume_info.get('description', ''),
-                            'description': volume_info.get('description', '')  # Add this for the summary
+                            'summary': volume_info.get('description', '')
                         }
                         print(f"Processing book: {book_data['title']} by {book_data['author']}")
                         search_results.append(book_data)
@@ -215,11 +214,11 @@ def book_add(request):
                             print(f"ISBN-13: {isbn13}")
                             break
 
-                    description = volume_info.get('description', '')
-                    if description:
-                        description = description.replace('<p>', '').replace('</p>', '\n\n')
-                        description = description.replace('<br>', '\n').replace('<br/>', '\n')
-                        description = description.replace('&quot;', '"').replace('&amp;', '&')
+                    summary = volume_info.get('description', '')
+                    if summary:
+                        summary = summary.replace('<p>', '').replace('</p>', '\n\n')
+                        summary = summary.replace('<br>', '\n').replace('<br/>', '\n')
+                        summary = summary.replace('&quot;', '"').replace('&amp;', '&')
                     
                     book = Book.objects.create(
                         user=request.user,
@@ -227,7 +226,7 @@ def book_add(request):
                         author=author_string[:500],
                         cover_url=cover_url,
                         isbn13=isbn13,
-                        summary=description,
+                        summary=summary,
                         total_pages=volume_info.get('pageCount', 0),
                         status='plan_to_read'
                     )
