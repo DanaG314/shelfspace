@@ -61,10 +61,6 @@ def signup(request):
     context = {'form': form, 'error_message': error_message}
     return render(request, 'signup.html', context)
 
-def bookshelf(request):
-    books = Book.objects.filter(user=request.user)
-    return render(request, 'books/bookshelf.html', { 'books': books })
-
 def book_detail(request, book_id):
     book = Book.objects.get(id=book_id)
     return render(request, 'books/detail.html', {
@@ -273,7 +269,6 @@ def update_status(request, book_id):
 def bookshelf(request):
     books = Book.objects.filter(user=request.user)
     
-    # Add search filter
     search_query = request.GET.get('search', '')
     if search_query:
         books = books.filter(
@@ -281,12 +276,33 @@ def bookshelf(request):
             Q(author__icontains=search_query)
         )
     
-    # Keep default ordering
-    books = books.order_by('-updated_at')
+    status = request.GET.get('status')
+    if status and status != 'all':
+        books = books.filter(status=status)
+    
+    sort_by = request.GET.get('sort', 'title')
+    sort_order = request.GET.get('order', 'asc')
+    
+    sort_mapping = {
+        'title': 'title',
+        'author': 'author',
+        'rating': 'rating',
+        'updated_at': 'updated_at'
+    }
+    
+    sort_field = sort_mapping.get(sort_by, 'title')
+    if sort_order == 'desc':
+        sort_field = f'-{sort_field}'
+    books = books.order_by(sort_field)
+    
+    from .utils import get_or_create_daily_quote
+    quote = get_or_create_daily_quote()
     
     return render(request, 'books/bookshelf.html', {
         'books': books,
         'search_query': search_query,
+        'quote': quote,
+        'current_sort': sort_by,
+        'current_order': sort_order,
+        'current_status': status or 'all'
     })
-
-
