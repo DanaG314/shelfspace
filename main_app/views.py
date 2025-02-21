@@ -288,3 +288,4 @@ def bookshelf(request):
         'books': books,
         'search_query': search_query,
     })
+
