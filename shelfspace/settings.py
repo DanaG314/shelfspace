@@ -139,3 +139,6 @@ GOOGLE_BOOKS_API_KEY = env('GOOGLE_BOOKS_API_KEY')
 
 LOGIN_REDIRECT_URL = 'bookshelf/'
 LOGOUT_REDIRECT_URL = '/'
+
+import django_on_heroku
+django_on_heroku.settings(locals(), databases=False)
