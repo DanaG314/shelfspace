@@ -9,12 +9,20 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             """
-            ALTER TABLE main_app_book 
-            DROP COLUMN IF EXISTS description;
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns 
+                    WHERE table_name = 'main_app_book' 
+                    AND column_name = 'description'
+                ) THEN
+                    ALTER TABLE main_app_book DROP COLUMN description;
+                END IF;
+            END $$;
             """,
             """
             ALTER TABLE main_app_book 
-            ADD COLUMN description text;
+            ADD COLUMN description text NULL;
             """
         ),
     ]
