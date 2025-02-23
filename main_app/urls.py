@@ -13,6 +13,6 @@ urlpatterns = [
     path('bookshelf/<int:book_id>/update-progress/', views.update_progress, name='update-progress'),
     path('bookshelf/<int:book_id>/update-rating/', views.update_rating, name='update-rating'),
     path('bookshelf/<int:book_id>/update-status/', views.update_status, name='update-status'),
-    path('search/', views.book_search, name='book-search'),
-    path('add/', views.book_add, name='book-add'),
+    path('bookshelf/search/', views.book_search, name='book-search'),
+    path('bookshelf/add/', views.book_add, name='book-add'),
 ]

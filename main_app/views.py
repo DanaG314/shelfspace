@@ -1,6 +1,7 @@
 import requests
 from django.shortcuts import render, redirect
 from main_app.models import Book
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -22,7 +23,7 @@ class Home(TemplateView):
         return context
 
 
-class BookDelete(DeleteView):
+class BookDelete(DeleteView, LoginRequiredMixin):
     model = Book
     success_url = '/bookshelf'
 
@@ -48,6 +49,7 @@ def book_detail(request, book_id):
         'book': book,
     })
 
+@login_required
 def book_search(request):
     search_results = []
     error = None
