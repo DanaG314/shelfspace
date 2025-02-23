@@ -10,20 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+import environ
+import django_on_heroku
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Initialize environ
-import environ
 env = environ.Env()
-# Read .env file
 environ.Env.read_env(os.path.join(BASE_DIR, 'shelfspace/.env'))
-
-# Print loaded API key for debugging
-print(f"Loaded API key: {env('GOOGLE_BOOKS_API_KEY')}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -137,8 +132,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GOOGLE_BOOKS_API_KEY = env('GOOGLE_BOOKS_API_KEY')
 
-LOGIN_REDIRECT_URL = 'bookshelf/'
+LOGIN_REDIRECT_URL = '/bookshelf'
 LOGOUT_REDIRECT_URL = '/'
-
-import django_on_heroku
 django_on_heroku.settings(locals(), databases=False)
