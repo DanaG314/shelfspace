@@ -96,10 +96,8 @@ def book_search(request):
                         volume_info = item.get('volumeInfo', {})
                         image_links = volume_info.get('imageLinks', {})
                         
-
                         cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                         if cover_url:
-
                             cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                         
                         book_data = {
@@ -111,7 +109,7 @@ def book_search(request):
                                           if id.get('type') == 'ISBN_13'), None),
                             'page_count': volume_info.get('pageCount', 0),
                             'summary': volume_info.get('description', ''),
-                            'description': volume_info.get('description', '')  # Add this for the summary
+                            'description': volume_info.get('description', '')
                         }
                         print(f"Processing book: {book_data['title']} by {book_data['author']}")
                         search_results.append(book_data)
@@ -197,11 +195,9 @@ def book_add(request):
                 print(f"Final title (length {len(title)}): {title}")
                 print(f"Final author string (length {len(author_string)}): {author_string}")
                 
-
                 image_links = volume_info.get('imageLinks', {})
                 cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                 if cover_url:
-
                     cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                     print(f"Cover URL (length {len(cover_url)}): {cover_url}")
                     cover_url = cover_url[:200]
