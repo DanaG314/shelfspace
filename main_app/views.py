@@ -96,10 +96,8 @@ def book_search(request):
                         volume_info = item.get('volumeInfo', {})
                         image_links = volume_info.get('imageLinks', {})
                         
-
                         cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                         if cover_url:
-
                             cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                         
                         book_data = {
@@ -110,7 +108,8 @@ def book_search(request):
                             'isbn_13': next((id.get('identifier') for id in volume_info.get('industryIdentifiers', []) 
                                           if id.get('type') == 'ISBN_13'), None),
                             'page_count': volume_info.get('pageCount', 0),
-                            'summary': volume_info.get('description', '')
+                            'summary': volume_info.get('description', ''),
+                            'description': volume_info.get('description', '')
                         }
                         print(f"Processing book: {book_data['title']} by {book_data['author']}")
                         search_results.append(book_data)
@@ -196,11 +195,9 @@ def book_add(request):
                 print(f"Final title (length {len(title)}): {title}")
                 print(f"Final author string (length {len(author_string)}): {author_string}")
                 
-
                 image_links = volume_info.get('imageLinks', {})
                 cover_url = image_links.get('large', '') or image_links.get('medium', '') or image_links.get('small', '') or image_links.get('thumbnail', '')
                 if cover_url:
-
                     cover_url = cover_url.replace('http://', 'https://').replace('&zoom=1', '&zoom=0')
                     print(f"Cover URL (length {len(cover_url)}): {cover_url}")
                     cover_url = cover_url[:200]
@@ -214,11 +211,11 @@ def book_add(request):
                             print(f"ISBN-13: {isbn13}")
                             break
 
-                    summary = volume_info.get('description', '')
-                    if summary:
-                        summary = summary.replace('<p>', '').replace('</p>', '\n\n')
-                        summary = summary.replace('<br>', '\n').replace('<br/>', '\n')
-                        summary = summary.replace('&quot;', '"').replace('&amp;', '&')
+                    description = volume_info.get('description', '')
+                    if description:
+                        description = description.replace('<p>', '').replace('</p>', '\n\n')
+                        description = description.replace('<br>', '\n').replace('<br/>', '\n')
+                        description = description.replace('&quot;', '"').replace('&amp;', '&')
                     
                     book = Book.objects.create(
                         user=request.user,
@@ -226,7 +223,7 @@ def book_add(request):
                         author=author_string[:500],
                         cover_url=cover_url,
                         isbn13=isbn13,
-                        summary=summary,
+                        summary=description,
                         total_pages=volume_info.get('pageCount', 0),
                         status='plan_to_read'
                     )
