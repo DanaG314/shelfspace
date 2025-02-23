@@ -1,5 +1,5 @@
 <div align="center" id="banner">
-    <img width="200" height="100" alt="ShelfSpace banner" src="/main_app/static/images/Logo.png">
+    <img width="300" height="100" alt="ShelfSpace banner" src="/main_app/static/images/Logo.png">
 </div>
 
 <div align="center" id="header">
@@ -14,10 +14,10 @@ Track your reading progress, explore new books, and connect with fellow book lov
 
 ## 📸 Screenshots
 
-|      Screenshot       |                            Description                             |
-| :-------------------: | :----------------------------------------------------------------: |
-|   **Landing Page**    |  <img src="/main_app/static/images/landingpage.png" width="300">   |
-| **User's Collection** | <img src="/frontend/public/images/usercollection.png" width="300"> |
+|      Screenshot      |                           Description                           |
+| :------------------: | :-------------------------------------------------------------: |
+|   **Landing Page**   | <img src="/main_app/static/images/landingpage.png" width="300"> |
+| **User's Bookshelf** |  <img src="/main_app/static/images/bookshelf.png" width="300">  |
 
 ## 💻 Technologies Used
 
