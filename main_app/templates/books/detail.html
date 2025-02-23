@@ -5,7 +5,7 @@
     <div class="col-span-4">
       <div class="bg-white rounded-lg shadow-lg p-6">
         {% if book.cover_url %}
-          <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="w-full rounded-lg">
+          <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="w-full rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
         {% else %}
           <div class="w-full h-[500px] bg-gray-100 rounded-lg flex items-center justify-center">
             <span class="text-gray-400">No cover</span>
@@ -18,8 +18,8 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex flex-col space-y-4">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">{{ book.title }}</h1>
-            <p class="text-lg text-gray-600">by {{ book.author }}</p>
+            <h1 class="text-2xl font-bold text-gray-900 mb-1">{{ book.title }}</h1>
+            <p class="text-lg text-gray-600 italic">by {{ book.author }}</p>
           </div>
 
           <div class="flex items-center space-x-8 text-sm text-gray-600">
@@ -44,7 +44,7 @@
           {% if book.summary %}
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Description</h3>
-            <div class="text-gray-600 leading-relaxed text-sm max-h-[200px] overflow-y-auto">
+            <div class="text-gray-600 leading-relaxed text-sm max-h-[200px] overflow-y-auto prose">
               {{ book.summary|striptags|linebreaksbr }}
             </div>
           </div>
@@ -89,7 +89,7 @@
               {% endif %}
             </div>
             {% if book.notes %}
-            <div id="notesDisplay" class="text-gray-600 max-h-[200px] overflow-y-auto">
+            <div id="notesDisplay" class="text-gray-600 max-h-[200px] overflow-y-auto prose">
               {{ book.notes|linebreaks }}
             </div>
             <form id="notesForm" method="POST" action="{% url 'update-notes' book.id %}" class="hidden mt-3">
