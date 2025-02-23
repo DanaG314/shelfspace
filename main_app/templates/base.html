@@ -1,90 +1,153 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}ShelfSpace{% endblock %}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background-color: #e6fff0;
-    }
-    .nav-icon {
-      filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4));
-      transition: all 0.2s ease-in-out;
-    }
-    .nav-icon:hover {
-      filter: drop-shadow(0 0 12px rgba(236, 72, 153, 0.6));
-      color: rgb(236, 72, 153);
-    }
-    .book-card {
-      background: white;
-      border-radius: 1rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      transition: all 0.3s ease;
-    }
-    .book-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-  </style>
-</head>
-<body class="h-full">
-  <nav class="border-b border-gray-200 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center">
-          <a href="{% url 'home' %}" class="text-xl font-medium text-emerald-600">
-            ShelfSpace
-          </a>
-        </div>
-        <div class="flex items-center space-x-6">
-          {% if user.is_authenticated %}
-          <a href="{% url 'bookshelf' %}" class="text-gray-600 hover:text-pink-500 inline-flex items-center">
-            <svg class="w-5 h-5 nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            <span class="ml-2">My Books</span>
-          </a>
-          <form action="{% url 'logout' %}" method="post" class="inline-flex">
-            {% csrf_token %}
-            <button type="submit" class="text-gray-600 hover:text-pink-500 inline-flex items-center">
-              <svg class="w-5 h-5 nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="{% static 'favicon.png' %}"
+    />
+    <title>{% block title %}ShelfSpace{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #e6fff0;
+      }
+      .nav-icon {
+        filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4));
+        transition: all 0.2s ease-in-out;
+      }
+      .nav-icon:hover {
+        filter: drop-shadow(0 0 12px rgba(236, 72, 153, 0.6));
+        color: rgb(236, 72, 153);
+      }
+      .book-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+      }
+      .book-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body class="h-full">
+    <nav class="border-b border-gray-200 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <a
+              href="{% url 'home' %}"
+              class="text-xl font-medium text-emerald-600"
+            >
+              ShelfSpace
+            </a>
+          </div>
+          <div class="flex items-center space-x-6">
+            {% if user.is_authenticated %}
+            <a
+              href="{% url 'bookshelf' %}"
+              class="text-gray-600 hover:text-pink-500 inline-flex items-center"
+            >
+              <svg
+                class="w-5 h-5 nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
               </svg>
-              <span class="ml-2">Log Out</span>
-            </button>
-          </form>
-          {% else %}
-          <a href="{% url 'home' %}" class="text-gray-600 hover:text-pink-500 inline-flex items-center">
-            <svg class="w-5 h-5 nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-            </svg>
-            <span class="ml-2">Log In</span>
-          </a>
-          <a href="{% url 'signup' %}" class="text-gray-600 hover:text-pink-500 inline-flex items-center">
-            <svg class="w-5 h-5 nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-            <span class="ml-2">Sign Up</span>
-          </a>
-          {% endif %}
+              <span class="ml-2">My Books</span>
+            </a>
+            <form action="{% url 'logout' %}" method="post" class="inline-flex">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="text-gray-600 hover:text-pink-500 inline-flex items-center"
+              >
+                <svg
+                  class="w-5 h-5 nav-icon"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span class="ml-2">Log Out</span>
+              </button>
+            </form>
+            {% else %}
+            <a
+              href="{% url 'home' %}"
+              class="text-gray-600 hover:text-pink-500 inline-flex items-center"
+            >
+              <svg
+                class="w-5 h-5 nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                />
+              </svg>
+              <span class="ml-2">Log In</span>
+            </a>
+            <a
+              href="{% url 'signup' %}"
+              class="text-gray-600 hover:text-pink-500 inline-flex items-center"
+            >
+              <svg
+                class="w-5 h-5 nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                />
+              </svg>
+              <span class="ml-2">Sign Up</span>
+            </a>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
-  <main>
-    {% if messages %}
-    <div class="fixed bottom-0 right-0 m-8">
-      {% for message in messages %}
-      <div class="bg-white rounded-lg shadow-lg p-4 mb-4 {% if message.tags %}{{ message.tags }}{% endif %}">
-        {{ message }}
+    </nav>
+    <main>
+      {% if messages %}
+      <div class="fixed bottom-0 right-0 m-8">
+        {% for message in messages %}
+        <div
+          class="bg-white rounded-lg shadow-lg p-4 mb-4 {% if message.tags %}{{ message.tags }}{% endif %}"
+        >
+          {{ message }}
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-    {% block content %} {% endblock %}
-  </main>
-</body>
+      {% endif %} {% block content %} {% endblock %}
+    </main>
+  </body>
 </html>
