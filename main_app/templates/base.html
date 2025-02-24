@@ -43,7 +43,7 @@
         <div class="flex justify-between h-16">
           <div class="flex items-center">
             <a
-              href="{% if user.is_authenticated %}{% url 'bookshelf' %}{% else %}{% url 'home' %}{% endif %}"
+              href="{% if user.is_authenticated %}{% url 'home' %}{% else %}{% url 'home' %}{% endif %}"
               class="text-xl font-medium text-emerald-600"
             >
               ShelfSpace
@@ -147,8 +147,7 @@
         </div>
         {% endfor %}
       </div>
-      {% endif %}
-      {% block content %}{% endblock %}
+      {% endif %} {% block content %}{% endblock %}
     </main>
   </body>
 </html>
