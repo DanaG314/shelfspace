@@ -25,15 +25,15 @@
 </div>
   {% endif %} {% if recent_books %}
   <div class="mt-16">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Recently Added Books</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 mx-auto text-center">Recently Added Books</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mx-auto w-4/5">
       {% for book in recent_books %}
       <div class="book-card p-4">
         {% if book.cover_url %}
         <img
           src="{{ book.cover_url }}"
           alt="{{ book.title }}"
-          class="w-full h-64 object-cover rounded-lg mb-4"
+          class="w-full h-64 object-contain rounded-lg mb-4"
         />
         {% else %}
         <div
