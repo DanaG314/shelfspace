@@ -40,10 +40,10 @@ Click to visit [ShelfSpace!][link]
 <details open>
 <summary> 🗺️ Navigating the Website</summary>
 1. Upon entering, visitors will be able to see recently added books.
-1. Signing up/Signing in is necessary to add books to your bookshelf, press the `SIGN UP` button or `LOGIN`.
-2. After signing-up/signing-in the user will be taken to their bookshelf, displaying a grid of books that have been added.
-3. If there are no books in the bookshelf, users can press `ADD NEW BOOK`, search for the book they are looking for and then add it to their bookshelf.
-4. Once the book is in the bookshelf users can click on the book to add the status of that book, what page they are on, jot down notes about the book, and what rating they give it.
+2. Signing up/Signing in is necessary to add books to your bookshelf, press the `SIGN UP` button or `LOGIN`.
+3. After signing-up/signing-in the user will be taken to their bookshelf, displaying a grid of books that have been added.
+4. If there are no books in the bookshelf, users can press `ADD NEW BOOK`, search for the book they are looking for and then add it to their bookshelf.
+5. Once the book is in the bookshelf users can click on the book to add the status of that book, what page they are on, jot down notes about the book, and what rating they give it.
 
 </details>
 
